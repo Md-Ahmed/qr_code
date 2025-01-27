@@ -1,0 +1,59 @@
+<html>
+	<head>
+		<title>eVital Bookmarklet</title>
+<style>
+a {
+	background: tomato;
+	font-weight: bold;
+	color: #fff; text-decoration: none;
+	padding: 1rem;
+	margin: 1rem;
+	display: block;
+	width: fit-content;
+	border-radius: 8px;
+	cursor: grab;
+}
+</style>
+	</head>
+	<body>
+		<a href="javascript:(function(){
+var head = document.getElementsByTagName('head')[0];
+var script = document.createElement('script');
+script.src = 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js';
+
+script.onload = function() {
+	chemistData = JSON.parse(CryptoJS.AES.decrypt(localStorage.getItem('chemistData'), 'India').toString(CryptoJS.enc.Utf8));
+
+	fetch('https://www.evitalrx.in:4000/v3/inventory/print_qrcode', {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json',
+		},
+		body: JSON.stringify({
+			chemist_id: chemistData.id,
+			accesstoken: chemistData.accesstoken,
+			qr_details: JSON.stringify([
+				{
+					batch: document.querySelectorAll('[role=\'gridcell\']')[1].innerText,
+					quantity: 1,
+					medicine_id: document.URL.match(/\d+/)[0],
+				}
+			]),
+			device_id: 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+		}),
+	}).then(
+		response => response.json()
+	).then(
+		data => {
+			navigator.clipboard.writeText(data.data[0].url)
+
+		}
+	).catch((e) => {
+		alert(e);
+	});
+};
+head.appendChild(script);
+})();
+		">Copy QR URL</a>
+	</body>
+</html>
