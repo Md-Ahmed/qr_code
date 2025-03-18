@@ -34,7 +34,7 @@ script.onload = function() {
 			accesstoken: chemistData.accesstoken,
 			qr_details: JSON.stringify([
 				{
-					batch: document.querySelectorAll('[role=\'gridcell\']')[1].innerText,
+					batch: document.querySelector('.jprint-batch-list').querySelector('.fa-check-square').parentElement.parentElement.parentElement.children[3].innerText,
 					quantity: 1,
 					medicine_id: document.URL.match(/\d+/)[0],
 				}
